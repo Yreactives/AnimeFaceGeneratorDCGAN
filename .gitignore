@@ -1,0 +1,6 @@
+*.pth
+venv/
+output/
+*.jpg
+*.jpeg
+*.png
