@@ -1,6 +1,7 @@
 *.pth
 venv/
 output/
+runs/
 *.jpg
 *.jpeg
 *.png
