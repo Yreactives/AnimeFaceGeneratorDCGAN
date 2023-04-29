@@ -45,27 +45,28 @@ while True:
 
     dataset = datasets.ImageFolder(filepath, transform)
     loader = DataLoader(dataset)
-    while True:
-        for _, (real, _) in enumerate(loader):
-            real = real.to(device)
-            noise = torch.randn(real.shape[0], z_dim, 1, 1).to(device)
-            fake = gen(noise)
-            disc_real = disc(real).reshape(-1)
-            loss_disc_real = criterion(disc_real, torch.ones_like(disc_real))
-            disc_fake = disc(fake).reshape(-1)
-            loss_disc_fake = criterion(disc_fake, torch.zeros_like(disc_fake))
-            loss_disc = (loss_disc_real + loss_disc_fake) / 2
-            disc.zero_grad()
-            loss_disc.backward(retain_graph=True)
-            opt_disc.step()
 
-            output = disc(fake).reshape(-1)
-            loss_gen = criterion(output, torch.ones_like(output))
-            gen.zero_grad()
-            loss_gen.backward()
-            opt_gen.step()
-            print(f"loss_G: {loss_gen:.4f} \t loss_D: {loss_disc:.4f}")
-        break
+    for _, (real, _) in enumerate(loader):
+        real = real.to(device)
+        noise = torch.randn(real.shape[0], z_dim, 1, 1).to(device)
+        fake = gen(noise)
+        disc_real = disc(real).reshape(-1)
+        loss_disc_real = criterion(disc_real, torch.ones_like(disc_real))
+        disc_fake = disc(fake).reshape(-1)
+        loss_disc_fake = criterion(disc_fake, torch.zeros_like(disc_fake))
+        loss_disc = (loss_disc_real + loss_disc_fake) / 2
+        disc.zero_grad()
+        loss_disc.backward(retain_graph=True)
+        opt_disc.step()
+
+        output = disc(fake).reshape(-1)
+        loss_gen = criterion(output, torch.ones_like(output))
+        gen.zero_grad()
+        loss_gen.backward()
+        opt_gen.step()
+
+
+
 
 
     saveimage(fake, "output/generated/")
