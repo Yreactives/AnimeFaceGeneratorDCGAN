@@ -62,7 +62,7 @@ class Generator(nn.Module):
                 bias=False
             ),
             nn.BatchNorm2d(out_channels),
-            nn.LeakyReLU(0.2)
+            nn.ReLU(0.2)
 
 
         )

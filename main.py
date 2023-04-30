@@ -68,7 +68,8 @@ while True:
 
 
 
-
+    noise = torch.randn(1, z_dim, 1, 1).to(device)
+    fake = gen(noise)
     saveimage(fake, "output/generated/")
     showimage(fake[0])
 
