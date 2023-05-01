@@ -5,7 +5,8 @@ import torchvision.transforms as transforms
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
+import cv2
+import numpy as np
 class Discriminator(nn.Module):
     def __init__(self, channels_img, features_d):
         super(Discriminator, self).__init__()
@@ -86,19 +87,45 @@ def test():
     z = torch.randn((N, z_dim, 1, 1))
     assert gen(z).shape == (N, in_channels, H, W)
 
-def saveimage(tensorlist, filepath):
+def saveimage(tensorlist, filepath, unique:bool=False):
     if not os.path.exists(filepath):
         os.makedirs(filepath)
-    x = 1
+    if unique:
+        x = 1
+        for file in os.listdir(filepath):
+            if os.path.isfile(os.path.join(os.getcwd(), filepath, file)):
+                x += 1
+
+    else:
+        x = 1
+    firstdir = os.getcwd()
+    dr = os.path.join(os.getcwd(), filepath)
     for a in tensorlist:
-        transform = transforms.ToPILImage()
-        img = transform(a)
-        Image.Image.save(img, fp=filepath+"img"+str(x)+".png")
+        with torch.no_grad():
+            numpy_image = a.cpu().permute(1, 2, 0).numpy()
+
+            numpy_image = numpy_image * 255
+            numpy_image = cv2.cvtColor(numpy_image, cv2.COLOR_BGR2RGB)
+            img = cv2.imshow("image", numpy_image)
+            os.chdir(dr)
+            cv2.imwrite("img"+str(x)+".png", numpy_image)
 
         x += 1
+    os.chdir(firstdir)
 #test()
 
-def showimage(tensor):
+def showimage(tensorv):
+    with torch.no_grad():
+        numpy_image = tensorv.cpu().permute(1, 2, 0).numpy()
+
+        numpy_image = numpy_image * 255
+        numpy_image = cv2.cvtColor(numpy_image, cv2.COLOR_BGR2RGB)
+        cv2.imshow("image", numpy_image)
+        cv2.waitKey()
+
+    """
     transform = transforms.ToPILImage()
     img = transform(tensor)
     img.show()
+    """
+

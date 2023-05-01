@@ -1,36 +1,45 @@
 import torch
-import torch.optim as optim
-import torch.nn as nn
-import torchvision.datasets as datasets
-from torch.utils.data import DataLoader
 from model import Discriminator, Generator, initialize_weights, saveimage, showimage
-import os
-from tkinter import filedialog
 
-print("Loading Session...")
+if __name__ == "__main__":
+    print("Loading Session...")
 
-data = torch.load("data.pth")
+    data = torch.load("data.pth")
 
-z_dim = data["z_dim"]
-channels_img = data["channels_img"]
-features_gen = data["features_gen"]
-features_disc = data["features_disc"]
-transform = data["transform"]
-criterion = nn.BCELoss()
+    z_dim = data["z_dim"]
+    channels_img = data["channels_img"]
+    features_gen = data["features_gen"]
+    features_disc = data["features_disc"]
+    transform = data["transform"]
+    #criterion = nn.BCELoss()
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-gen = Generator(z_dim, channels_img, features_gen).to(device)
-disc = Discriminator(channels_img, features_disc).to(device)
-initialize_weights(gen)
-initialize_weights(disc)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    gen = Generator(z_dim, channels_img, features_gen).to(device)
+    #disc = Discriminator(channels_img, features_disc).to(device)
+    initialize_weights(gen)
+    #initialize_weights(disc)
 
-gen.eval()
-disc.eval()
-opt_gen = optim.Adam(gen.parameters(), lr=2e-4, betas=(0.5, 0.999))
+    gen.eval()
+    #disc.eval()
+    #opt_gen = optim.Adam(gen.parameters(), lr=2e-4, betas=(0.5, 0.999))
 
-opt_disc = optim.Adam(disc.parameters(), lr=2e-4, betas=(0.5, 0.999))
+    #opt_disc = optim.Adam(disc.parameters(), lr=2e-4, betas=(0.5, 0.999))
+
+    gen.load_state_dict(data["gen"])
+    #disc.load_state_dict(data["disc"])
+    #opt_gen.load_state_dict(data["opt_gen"])
+    #opt_disc.load_state_dict(data["opt_disc"])
+
+    noise = torch.randn(1, z_dim, 1, 1).to(device)
+    fake= gen(noise)
 
 
+    noise = torch.randn(1, z_dim, 1, 1).to(device)
+    fake = gen(noise)
+    saveimage(fake, "output/generated/", True)
+    showimage(fake[0])
+
+"""
 while True:
     gen.load_state_dict(data["gen"])
     disc.load_state_dict(data["disc"])
@@ -72,6 +81,8 @@ while True:
     fake = gen(noise)
     saveimage(fake, "output/generated/")
     showimage(fake[0])
+"""
+
 
 
 

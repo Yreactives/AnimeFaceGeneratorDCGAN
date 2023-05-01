@@ -8,6 +8,8 @@ from torch.utils.data import DataLoader
 from model import Discriminator, Generator, initialize_weights, saveimage
 from torch.utils.tensorboard import SummaryWriter
 import shutil
+import matplotlib.pyplot as plt
+import time
 
 
 try:
@@ -15,6 +17,8 @@ try:
 
 except Exception as e:
     print(e)
+
+time.sleep(3)
 checkpoint = torch.load("data.pth")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 learning_rate = 2e-4
@@ -23,7 +27,7 @@ image_size = 64
 channels_img = 3
 z_dim = 100
 last_epoch = checkpoint["num_epochs"]
-num_epochs = 5
+num_epochs = 20
 features_disc = 64
 features_gen = 64
 
@@ -95,12 +99,6 @@ for epoch in range(last_epoch, last_epoch+num_epochs):
                 writer_fake.add_image("Fake", img_grid_fake, global_step=step)
             step += 1
 
-
-
-
-
-
-
 saveimage(fake, "output/endresult/")
 data = {
     "gen": gen.state_dict(),
@@ -114,12 +112,11 @@ data = {
     "image_size": image_size,
     "features_gen": features_gen,
     "features_disc": features_disc,
-
-    
-
 }
 torch.save(data, "data.pth")
-
+#with torch.no_grad():
+    #plt.imshow(fake[0].cpu().permute(1, 2, 0))
+    #plt.show()
 
 
 
