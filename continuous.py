@@ -6,7 +6,15 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from model import Discriminator, Generator, initialize_weights, saveimage
+from torch.utils.tensorboard import SummaryWriter
+import shutil
 
+
+try:
+    shutil.rmtree("runs")
+
+except Exception as e:
+    print(e)
 checkpoint = torch.load("data.pth")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 learning_rate = 2e-4
@@ -15,7 +23,7 @@ image_size = 64
 channels_img = 3
 z_dim = 100
 last_epoch = checkpoint["num_epochs"]
-num_epochs = 30
+num_epochs = 5
 features_disc = 64
 features_gen = 64
 
@@ -42,8 +50,8 @@ opt_disc.load_state_dict(checkpoint["opt_disc"])
 criterion = nn.BCELoss()
 
 fixed_noise = torch.randn(32, z_dim, 1, 1).to(device)
-# writer_real = SummaryWriter(f"runs/real")
-# writer_fake = SummaryWriter(f"runs/fake")
+writer_real = SummaryWriter(f"runs/real")
+writer_fake = SummaryWriter(f"runs/fake")
 step = 0
 
 gen.train()
@@ -74,19 +82,19 @@ for epoch in range(last_epoch, last_epoch+num_epochs):
             print(f"Epoch [{epoch}/{num_epochs+last_epoch}] Batch {batch_idx}/{len(loader)} \
             Loss D: {loss_disc:.4f}, loss_G: {loss_gen:.4f}"
             )
-            """
+
             with torch.no_grad():
                 fake = gen(fixed_noise)
                 img_grid_real = torchvision.utils.make_grid(
-                    real[:32], normalize=True
+                    real[:32], normalize=False
                 )
                 img_grid_fake = torchvision.utils.make_grid(
-                    fake[:32], normalize = True
+                    fake[:32], normalize = False
                 )
                 writer_real.add_image("Real", img_grid_real, global_step=step)
                 writer_fake.add_image("Fake", img_grid_fake, global_step=step)
             step += 1
-            """
+
 
 
 
