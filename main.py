@@ -12,7 +12,7 @@ if __name__ == "__main__":
     features_disc = data["features_disc"]
     transform = data["transform"]
     #criterion = nn.BCELoss()
-
+    size = int(input("How many pictures do you want to generate? : "))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     gen = Generator(z_dim, channels_img, features_gen).to(device)
     #disc = Discriminator(channels_img, features_disc).to(device)
@@ -30,14 +30,13 @@ if __name__ == "__main__":
     #opt_gen.load_state_dict(data["opt_gen"])
     #opt_disc.load_state_dict(data["opt_disc"])
 
-    noise = torch.randn(1, z_dim, 1, 1).to(device)
-    fake= gen(noise)
 
 
-    noise = torch.randn(1, z_dim, 1, 1).to(device)
+
+    noise = torch.randn(size, z_dim, 1, 1).to(device)
     fake = gen(noise)
     saveimage(fake, "output/generated/", True)
-    showimage(fake[0])
+
 
 """
 while True:
